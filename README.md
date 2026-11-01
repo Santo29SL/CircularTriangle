@@ -1,5 +1,3 @@
-
-
 <p align="center">
   <img src="assets/banner.svg" alt="dribble3d: Sketch it. Get a 3D model you can print." width="100%">
 </p>
@@ -17,6 +15,15 @@
 <p align="center">
   <img src="assets/demo.gif" alt="dribble3d demo" width="85%">
 </p>
+
+---
+
+<h1 align="center">🌐 Live demo</h1>
+
+<p align="center"><b><a href="https://crazycat8686--dribble3d-dribble-web.us-east.modal.run/">https://crazycat8686--dribble3d-dribble-web.us-east.modal.run/</a></b></p>
+
+> [!NOTE]
+> **Deployment status: working.** The app is deployed on Modal (L40S GPU) and serving at the link above. The GPU container scales to zero when idle, so the first visit after a quiet period takes **1 to 2 minutes** to wake up. Please wait for the page to finish loading.
 
 ---
 
@@ -170,38 +177,101 @@ Fingers hide each other, there are lots of thin parts, and every angle looks dif
 
 ---
 
-<h1 align="center">🚀 Run it</h1>
+<h1 align="center">🚀 Install and replicate</h1>
 
-### On Modal (what we use)
+Follow these steps to deploy your own copy of dribble3d. You end up with the same app as the live demo, at your own URL.
+
+### Requirements
+
+- A [Modal](https://modal.com) account (free tier is enough to start; GPU time is billed per second while the app runs)
+- Python 3.9 or newer on your computer
+- `git`
+- Only for TRELLIS.2: a Hugging Face account and access token (steps below)
+
+### 1. Get the code
+
+```bash
+git clone <your-repo-url> dribble3d
+cd dribble3d
+```
+
+`dribble3d.py` and `modal_app.py` must sit in the same folder.
+
+### 2. Install and log in to Modal
 
 ```bash
 pip install modal
 modal setup
+```
 
-# one-time, only needed for TRELLIS.2
-# the HF account must have accepted the licences of
-#   facebook/dinov3-vitl16-pretrain-lvd1689m  and  briaai/RMBG-2.0
+`modal setup` opens a browser window to link the CLI to your account.
+
+### 3. (Optional) Enable TRELLIS.2
+
+Skip this step if you do not need the textured TRELLIS.2 option.
+
+1. Log in to Hugging Face and accept the licences on both gated model pages:
+   - `facebook/dinov3-vitl16-pretrain-lvd1689m`
+   - `briaai/RMBG-2.0`
+2. Create a read access token under Hugging Face **Settings → Access Tokens**.
+3. Store it in Modal:
+
+```bash
 modal secret create huggingface-secret HF_TOKEN=hf_xxx
+```
 
+### 4. Deploy
+
+With TRELLIS.2:
+
+```bash
 modal deploy modal_app.py
 ```
 
-> [!NOTE]
-> The first deploy builds the images and bakes the model weights in, so it takes a long time (the TRELLIS.2 image compiles several CUDA packages). Later deploys that only change code take seconds.
-
-Deploy **without** TRELLIS.2 (the button is greyed out):
+Without TRELLIS.2 (the button is greyed out, no secret needed):
 
 ```bash
 D3_TRELLIS=0 modal deploy modal_app.py
 ```
 
-### Locally / Kaggle
+> [!NOTE]
+> The first deploy builds the images and bakes about 15 GB of model weights in (about 30 GB with TRELLIS.2, which also compiles several CUDA packages). Expect a long first build. Later deploys that only change code take seconds.
 
-`dribble3d.py` is a single file and runs on its own:
+### 5. Open the app
+
+When the deploy finishes, Modal prints a URL for the `web` endpoint of the `Dribble` class. It looks like:
+
+```
+https://<your-modal-username>--dribble3d-dribble-web.<region>.modal.run
+```
+
+Open it in a browser. The first visit loads the models onto the GPU, which takes 1 to 2 minutes.
+
+### 6. Check that it works
+
+- Open `<your-url>/health` and confirm `neural_ready` is `true` and `errors` is empty.
+- Draw a simple object (a mug, a chair), press generate, and wait for the candidates, scores and 3D viewer to appear.
+- Download the `.glb`, `.obj` or `.stl` from the result page.
+
+### Update or stop
 
 ```bash
+modal deploy modal_app.py      # redeploy after changing code
+modal app stop dribble3d       # take the app offline
+```
+
+### Run without Modal (Kaggle or local GPU)
+
+`dribble3d.py` is a single file and runs on its own. You need an NVIDIA GPU with at least 16 GB of memory, internet access, and:
+
+```bash
+pip install torch torchvision diffusers "transformers==5.8.1" huggingface_hub accelerate safetensors \
+  omegaconf einops trimesh networkx rembg onnxruntime imageio fast-simplification scikit-image peft \
+  fastapi uvicorn pillow scipy pyyaml tqdm opencv-python-headless numpy pymeshlab
 python dribble3d.py --tunnel
 ```
+
+TripoSR and Hunyuan3D-2 are cloned automatically on first run. `--tunnel` prints a public `trycloudflare.com` URL; leave it out to serve on `http://localhost:7860`. TRELLIS.2 is not available this way (it needs 24 GB or more of GPU memory and its own CUDA 12.4 build), so set `D3_TRELLIS=0`. Use the Modal deployment for TRELLIS.2.
 
 ### ❄️ Cold starts and cost
 
@@ -271,5 +341,3 @@ Please check each model's licence before using outputs commercially.
 
 
 [Dribble3d.docx](https://github.com/user-attachments/files/34232283/Sketch2Shape_Project_Report.1.docx)
-
-

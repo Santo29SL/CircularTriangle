@@ -4,13 +4,13 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/closed--loop-verified-2A9D8F?style=for-the-badge" alt="closed-loop">
-  <img src="https://img.shields.io/badge/scored-candidates-8E44AD?style=for-the-badge" alt="scored candidates">
+  <img src="https://img.shields.io/badge/vision%20AI-sees%20your%20sketch-8E44AD?style=for-the-badge" alt="vision AI">
   <img src="https://img.shields.io/badge/multi--view-Zero123%2B%2B%20%E2%86%92%20Hunyuan3D-2980B9?style=for-the-badge" alt="multi-view">
   <img src="https://img.shields.io/badge/TRELLIS.2-textured-E76F51?style=for-the-badge" alt="TRELLIS.2">
   <img src="https://img.shields.io/badge/deploy-Modal-1F2937?style=for-the-badge" alt="Modal">
 </p>
 
-<h3 align="center">Turn a rough drawing, a photo, or four photos into a watertight 3D mesh.<br>And see exactly why it came out the way it did.</h3>
+<h3 align="center">Draw something rough. Get a 3D model you can print.<br>And watch every step of how it got there.</h3>
 
 <p align="center">
   <img src="assets/demo.gif" alt="dribble3d demo" width="85%">
@@ -18,102 +18,123 @@
 
 ---
 
-<h1 align="center">🌐 Live demo</h1>
+<h1 align="center">🌐 Try it</h1>
 
-<p align="center"><b><a href="https://crazycat8686--dribble3d-dribble-web.us-east.modal.run/">https://crazycat8686--dribble3d-dribble-web.us-east.modal.run/</a></b></p>
+<p align="center"><b><a href="https://crazycat8686--dribble3d-dribble-web.us-east.modal.run/">crazycat8686--dribble3d-dribble-web.us-east.modal.run</a></b></p>
 
 > [!NOTE]
-> **Deployment status: working.** The app is deployed on Modal (L40S GPU) and serving at the link above. The GPU container scales to zero when idle, so the first visit after a quiet period takes **1 to 2 minutes** to wake up. Please wait for the page to finish loading.
+> **Deployed and working.** The app runs on Modal with an L40S GPU. It sleeps when nobody is using it, so the first visit after a quiet spell takes **1 to 2 minutes** to wake up. Give it a moment.
 
 ---
 
-<h1 align="center">⚡ The big idea</h1>
+<h1 align="center">💡 The idea</h1>
 
-> [!IMPORTANT]
-> **dribble3d never trusts a single model's output.**
-> It generates several candidates, **scores them against your sketch**, builds the 3D, **checks the 3D against your sketch again**, and retries when the match is bad. And every one of those steps is **shown to you**, not hidden behind a spinner.
+Turning a drawing into a 3D object is not one problem. It is five or six, and no single AI model is good at all of them. So dribble3d does not lean on one model. It brings in the **right specialist for each job**, lets a **vision AI look at your drawing** to understand what it is, and then **checks its own work** against what you drew. If something is off, you can see it, and you can fix it.
 
-| 🎯 Scored | 🔁 Verified | 🖼️ Multi-image | 🔍 Transparent |
-|:---:|:---:|:---:|:---:|
-| Every candidate gets a visible score | The 3D is projected back and compared to your drawing | Candidates, multi-view and real photos | Timings, backend, health and fallbacks all on screen |
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🧩 The right model for each job
+A model that understands pictures, one that paints realistic images, one that cuts objects out, and different ones that build 3D. Each is used because the step needs it.
+
+</td>
+<td width="33%" valign="top">
+
+### 👁️ An AI that actually looks
+A vision-language model reads your sketch and names what it sees. A second model, CLIP, double-checks that name. You see both opinions, not just the verdict.
+
+</td>
+<td width="33%" valign="top">
+
+### 🔁 A loop that corrects itself
+The result is compared back to your drawing. Not a match? It tries again with a better candidate. You can also step in and steer it.
+
+</td>
+</tr>
+</table>
 
 ---
 
-<h1 align="center">🧭 The flow</h1>
+<h1 align="center">🧭 How it works</h1>
 
 <p align="center">
   <img src="assets/flow.svg" alt="dribble3d pipeline" width="100%">
 </p>
 
-Every stage reports its own timing, and the result page shows them all.
+1. **Read the drawing.** Your strokes and outline are extracted.
+2. **Understand it.** A vision AI looks at the sketch and says what it is. CLIP weighs in as a second opinion. If they disagree, CLIP picks the name that fits the drawing better.
+3. **Imagine it.** SDXL with a ControlNet turns your sketch into several realistic pictures of the object.
+4. **Choose the best one.** Each picture is scored on how closely it follows your lines, how well its shape matches, how well it fits the label, and how easy it will be to turn into 3D.
+5. **Build it.** A 3D model is made from the winning picture.
+6. **Check it.** The model is flattened back to 2D and compared with your sketch. If the match is weak, we go back to step 5 with the next-best picture.
+
+Every stage reports its own timing, and the result page shows all of it.
 
 ---
 
-<h1 align="center">🏆 What we did differently</h1>
+<h1 align="center">👁️ Seeing is the point</h1>
 
-Most sketch-to-3D demos are a text box, a spinner and a mesh. If the mesh is wrong, you can't tell why. We built it the other way round.
+Most sketch-to-3D tools are a text box, a spinner and a mesh. If the result is wrong, you never find out why. We wanted the opposite: nothing hidden.
 
-## 1️⃣ We show the scores
+### You see what the AI thinks your drawing is
+The **Identified as** card shows the label, which model produced it, whether CLIP agrees, and the alternatives with their confidence. Wrong guess? Tap another option, or type your own.
 
-After the AI draws candidates from your sketch, you see **all of them side by side with their scores**, the winner highlighted, and the score broken into parts.
+### You see every candidate, and its score
+All the generated pictures sit side by side with the winner highlighted. The score is broken into its parts, so you can tell *why* one beat the others, and notice when none were good.
 
 <p align="center">
   <img src="assets/scoring.svg" alt="Candidate scoring formula" width="100%">
 </p>
 
-You can see *why* one candidate beat the others, and notice when none of them were good.
+### You see how well the 3D matches your drawing
+After the model is built, we project it back to 2D and measure its overlap with your original sketch. That number, and whether a retry was needed, is on the result page.
 
-## 2️⃣ We show what the AI thinks your drawing is, and let you correct it
+### You see the whole machine
+Timings per stage, which backend built the mesh, triangle count, size, volume, whether the file reloads cleanly, and whether it is print-ready. All in one **Under the hood** panel.
 
-The **"Identified as"** card shows the label, which model produced it, whether CLIP agrees, and the alternatives with their confidence. Wrong guess? Click another option, or type it in.
-
-## 3️⃣ We check our own work against *your drawing*, not just against the AI
-
-After the mesh is built, we project it back to 2D and measure how well its silhouette matches **your original sketch**. That number, and whether we had to retry, is on the result page.
-
-## 4️⃣ We show the whole pipeline
-
-Per-stage timings, which backend actually produced the mesh, triangle count, bounding box, volume, whether the `.glb` reloads cleanly, and whether the mesh is print-ready, all in one **"Under the hood"** panel.
-
-## 5️⃣ We tell you when something fell back
-
-If multi-view fails and the app drops to single view, or the background remover ate part of the object, you get a plain-language note. We'd rather you know than get a silently worse model.
+### You are told when something went sideways
+If multi-view failed and we fell back to single view, or the background remover took a bite out of your object, you get a plain note. You would rather know than get a quietly worse model.
 
 ---
 
-<h1 align="center">🔁 The feedback loop</h1>
+<h1 align="center">🔁 The correction loop</h1>
 
 <p align="center">
   <img src="assets/loops.svg" alt="Two feedback loops" width="100%">
 </p>
 
-> [!TIP]
-> **Steer the loop yourself.** The **Refine** box understands colours and materials ("red brick walls, grey roof", "carved wooden", "thinner") and turns them into prompt additions and control-strength changes.
+The loop runs on its own, and you can join it at any point.
 
-- **Loop 1** picks the best 2D candidate (3 in Fast mode, 5 in Quality) and keeps the runner-up as a backup.
-- **Loop 2** projects the finished mesh back to 2D and computes **IoU against your sketch**. Below **0.60**, it retries with the next-best candidate and keeps whichever mesh matches better.
-- **Multi-view** builds up to **3 versions** (Zero123++ invents the sides it can't see, so every run differs), scores each on sketch match and side/back consistency, stops early if one is good, and keeps the best.
-- **If everything fails**, it falls back to a lighter tier instead of crashing.
+**On its own**
+- **Pick the best 2D picture.** 3 candidates in Fast mode, 5 in Quality. The runner-up is kept as a backup.
+- **Check the 3D against your sketch.** Below an overlap of **0.60**, it retries with the backup and keeps whichever model matches better.
+- **Multi-view tries more than once.** Zero123++ has to invent the sides it cannot see, so each run differs. We build up to **3 versions**, score each on sketch match and side and back consistency, stop early when one is good, and keep the best.
+- **If everything fails,** it drops to a lighter option instead of crashing.
+
+**With you**
+- **Fix the label.** Pick a different guess or type your own, and the whole pipeline follows it.
+- **Refine in plain words.** The **Refine** box understands things like "red brick walls, grey roof", "carved wooden" or "thinner", and turns them into prompt changes and control-strength changes.
 
 ---
 
-<h1 align="center">🖼️ More than one image, on purpose</h1>
+<h1 align="center">🖼️ More than one picture, on purpose</h1>
 
 <p align="center">
   <img src="assets/multi_image.svg" alt="Multiple images" width="100%">
 </p>
 
-One image can't tell you what the back of an object looks like, so we use multiple images three different ways:
+One picture cannot show you the back of an object. So we use several, in three different ways:
 
 | Where | What | Why |
 |---|---|---|
-| **N candidates** | Several 2D renders of the same sketch, scored and ranked | One bad sample doesn't ruin the result |
-| **Multi-view** | Zero123++ turns the winning image into 6 views; Hunyuan3D-2mv builds the mesh from front, side and back | Back and sides are no longer pure guesswork |
-| **4 Photos** | Real front / left / back / right photos, each cut out and checked against the finished mesh from its own angle | Real photos beat invented views |
+| **Candidates** | Several 2D renders of the same sketch, scored and ranked | One unlucky sample does not ruin the result |
+| **Multi-view** | Zero123++ turns the winner into 6 views, and Hunyuan3D-2mv builds the mesh from front, side and back | The back and sides stop being pure guesswork |
+| **4 Photos** | Real front, left, back and right photos, each cut out and checked against the finished mesh from its own angle | Real photos beat invented ones |
 
 ---
 
-<h1 align="center">🧱 Three ways to get 3D</h1>
+<h1 align="center">🧱 Three ways to build the 3D</h1>
 
 | | ⚡ **Single view** | 🔭 **Multi-view** *(default)* | 🎨 **TRELLIS.2** |
 |---|---|---|---|
@@ -122,27 +143,43 @@ One image can't tell you what the back of an object looks like, so we use multip
 | **Speed** | Fastest | Medium | Slowest |
 | **GPU** | Standard | Standard | Large (own container) |
 
-**Three ways to give it input:** ✏️ **Draw** in the browser · 📤 **Upload** a drawing or photo (auto-detects which) · 📷 **4 Photos** (front plus at least one more angle).
+**Three ways in:** ✏️ **Draw** in the browser · 📤 **Upload** a drawing or photo (it works out which) · 📷 **4 Photos** (front plus at least one more angle).
 
-After generation, re-light the model with material presets (Original, Clay, Terracotta, Metallic gold, Toy matte) and download **`.glb`**, **`.obj`** or **`.stl`**.
+When it is done, re-light the model with a material preset (Original, Clay, Terracotta, Metallic gold, Toy matte) and download it as **`.glb`**, **`.obj`** or **`.stl`**.
+
+---
+
+<h1 align="center">🧠 The models, and why each is there</h1>
+
+| Job | Model | Why it is needed |
+|---|---|---|
+| **Understand the sketch** | Qwen2.5-VL-7B-Instruct, local, no API key | Reads the drawing and names it in plain words |
+| **Second opinion** | CLIP ViT-L/14 | Cross-checks the name and scores how well each picture fits it |
+| **Imagine the object** | SDXL + xinsir scribble ControlNet + fp16-fix VAE (SD 1.5 + lllyasviel scribble as a lighter fallback) | Turns rough lines into realistic pictures that still follow your shape |
+| **Cut it out** | rembg `isnet-general-use` (u2net fallback) + a clean-up pass | Isolates the object and repairs edges and see-through gaps |
+| **Fast 3D** | TripoSR | Quick answer for simple objects |
+| **Better 3D** | Zero123++ v1.2 → Hunyuan3D-2mv | Invents the missing sides, then builds from several views |
+| **3D with colour** | TRELLIS.2-4B (+ DINOv3, RMBG-2.0) | Shape and colour together |
+| **Make it printable** | trimesh, pymeshlab, fast-simplification | Closes holes, smooths and trims the mesh |
+| **Serve it** | FastAPI on Modal (L40S GPUs) | One file, one URL |
 
 ---
 
 <h1 align="center">📸 Examples</h1>
 
-> Videos and final renders coming soon. Placeholders below.
+> Videos and final renders coming soon.
 
 ### 🛋️ Sofa · Multi-view
-A sofa looks simple from the front, but the back, the arms and the seat depth all have to be inferred. A good test for multi-view.
+The back, the arms and the seat depth all have to be inferred. A good test for multi-view.
 
-| Sketch | AI candidates + scores | 3D result |
+| Sketch | Candidates + scores | 3D result |
 |:---:|:---:|:---:|
 | ![sofa sketch](assets/sofa_sketch.png) | ![sofa candidates](assets/sofa_candidates.png) | ![sofa 3d](assets/sofa_3d.png) |
 
 <!-- video: assets/sofa.mp4 -->
 
 ### 🐔 Chicken · TRELLIS.2
-TRELLIS.2 generates shape and colour together, so organic, textured objects keep their feathers and comb colours.
+Shape and colour come out together, so the feathers and comb keep their colours.
 
 | Sketch | 3D result (TRELLIS.2) |
 |:---:|:---:|
@@ -151,7 +188,7 @@ TRELLIS.2 generates shape and colour together, so organic, textured objects keep
 <!-- video: assets/chicken.mp4 -->
 
 ### ✋ Hand · the stress test
-Fingers hide each other, there are lots of thin parts, and every angle looks different. We include it **on purpose**: it shows the scoring panel, the retry loop, and what the app does when the answer isn't perfect, including the notes that tell you so.
+Fingers hide each other, parts are thin, and every angle looks different. We include it on purpose: it shows the scoring, the retry loop, and the notes the app gives when the answer is not perfect.
 
 | Input | Candidates + scores | 3D result |
 |:---:|:---:|:---:|
@@ -161,32 +198,13 @@ Fingers hide each other, there are lots of thin parts, and every angle looks dif
 
 ---
 
-<h1 align="center">🧠 Models used</h1>
+<h1 align="center">🚀 Run your own copy</h1>
 
-| Stage | Model |
-|---|---|
-| **Label** | Qwen2.5-VL-7B-Instruct (runs locally, no API key) + CLIP ViT-L/14 as a cross-check |
-| **2D synthesis** | SDXL + xinsir ControlNet (scribble) + fp16-fix VAE. SD 1.5 + lllyasviel scribble as a lighter fallback |
-| **Background removal** | rembg `isnet-general-use` (u2net fallback) plus a clean-up pass for edges and see-through gaps |
-| **Scoring** | Edge IoU, silhouette IoU, CLIP similarity, 3D-readiness |
-| **3D · single view** | TripoSR |
-| **3D · multi-view** | Zero123++ v1.2 → Hunyuan3D-2mv |
-| **3D · textured** | TRELLIS.2-4B (+ DINOv3, RMBG-2.0) |
-| **Mesh clean-up** | trimesh, pymeshlab, fast-simplification |
-| **Serving** | FastAPI, deployed on Modal (L40S GPUs) |
+### What you need
 
----
-
-<h1 align="center">🚀 Install and replicate</h1>
-
-Follow these steps to deploy your own copy of dribble3d. You end up with the same app as the live demo, at your own URL.
-
-### Requirements
-
-- A [Modal](https://modal.com) account (free tier is enough to start; GPU time is billed per second while the app runs)
-- Python 3.9 or newer on your computer
-- `git`
-- Only for TRELLIS.2: a Hugging Face account and access token (steps below)
+- A [Modal](https://modal.com) account (GPU time is billed per second, only while the app runs)
+- Python 3.9 or newer, and `git`
+- For TRELLIS.2: a Hugging Face account and access token
 
 ### 1. Get the code
 
@@ -195,26 +213,21 @@ git clone <your-repo-url> dribble3d
 cd dribble3d
 ```
 
-`dribble3d.py` and `modal_app.py` must sit in the same folder.
+Keep `dribble3d.py` and `modal_app.py` in the same folder.
 
-### 2. Install and log in to Modal
+### 2. Set up Modal
 
 ```bash
 pip install modal
 modal setup
 ```
 
-`modal setup` opens a browser window to link the CLI to your account.
+### 3. Allow TRELLIS.2 to download its models
 
-### 3. (Optional) Enable TRELLIS.2
-
-Skip this step if you do not need the textured TRELLIS.2 option.
-
-1. Log in to Hugging Face and accept the licences on both gated model pages:
-   - `facebook/dinov3-vitl16-pretrain-lvd1689m`
-   - `briaai/RMBG-2.0`
-2. Create a read access token under Hugging Face **Settings → Access Tokens**.
-3. Store it in Modal:
+1. On Hugging Face, accept the licences on both gated pages:
+   `facebook/dinov3-vitl16-pretrain-lvd1689m` and `briaai/RMBG-2.0`
+2. Create a read token under **Settings → Access Tokens**
+3. Give it to Modal:
 
 ```bash
 modal secret create huggingface-secret HF_TOKEN=hf_xxx
@@ -222,107 +235,88 @@ modal secret create huggingface-secret HF_TOKEN=hf_xxx
 
 ### 4. Deploy
 
-With TRELLIS.2:
-
 ```bash
 modal deploy modal_app.py
 ```
 
-Without TRELLIS.2 (the button is greyed out, no secret needed):
-
-```bash
-D3_TRELLIS=0 modal deploy modal_app.py
-```
-
 > [!NOTE]
-> The first deploy builds the images and bakes about 15 GB of model weights in (about 30 GB with TRELLIS.2, which also compiles several CUDA packages). Expect a long first build. Later deploys that only change code take seconds.
+> The first deploy is slow. It builds the images, compiles several CUDA packages and bakes in tens of gigabytes of model weights. You only pay that cost once. Later deploys that change only code take seconds.
 
-### 5. Open the app
+### 5. Open it
 
-When the deploy finishes, Modal prints a URL for the `web` endpoint of the `Dribble` class. It looks like:
+Modal prints a link when the deploy finishes. It looks like:
 
 ```
 https://<your-modal-username>--dribble3d-dribble-web.<region>.modal.run
 ```
 
-Open it in a browser. The first visit loads the models onto the GPU, which takes 1 to 2 minutes.
+### 6. Make sure it is healthy
 
-### 6. Check that it works
+- Open `<your-link>/health`. You want `neural_ready` to be `true` and `errors` to be empty.
+- Draw something simple, like a mug or a chair, and generate. You should see the label, the candidates with scores, and the 3D viewer.
+- Download the `.glb`, `.obj` or `.stl`.
 
-- Open `<your-url>/health` and confirm `neural_ready` is `true` and `errors` is empty.
-- Draw a simple object (a mug, a chair), press generate, and wait for the candidates, scores and 3D viewer to appear.
-- Download the `.glb`, `.obj` or `.stl` from the result page.
-
-### Update or stop
+### Update or switch off
 
 ```bash
-modal deploy modal_app.py      # redeploy after changing code
-modal app stop dribble3d       # take the app offline
+modal deploy modal_app.py      # after changing code
+modal app stop dribble3d       # take it offline
 ```
 
-### Run without Modal (Kaggle or local GPU)
+### 📓 No Modal? Use the notebook
 
-`dribble3d.py` is a single file and runs on its own. You need an NVIDIA GPU with at least 16 GB of memory, internet access, and:
-
-```bash
-pip install torch torchvision diffusers "transformers==5.8.1" huggingface_hub accelerate safetensors \
-  omegaconf einops trimesh networkx rembg onnxruntime imageio fast-simplification scikit-image peft \
-  fastapi uvicorn pillow scipy pyyaml tqdm opencv-python-headless numpy pymeshlab
-python dribble3d.py --tunnel
-```
-
-TripoSR and Hunyuan3D-2 are cloned automatically on first run. `--tunnel` prints a public `trycloudflare.com` URL; leave it out to serve on `http://localhost:7860`. TRELLIS.2 is not available this way (it needs 24 GB or more of GPU memory and its own CUDA 12.4 build), so set `D3_TRELLIS=0`. Use the Modal deployment for TRELLIS.2.
+A notebook that runs the app without TRELLIS.2 is available on another branch of this repository. Open it there to try dribble3d on a GPU notebook environment.
 
 ### ❄️ Cold starts and cost
 
-- The GPU container **scales to zero** when idle, so you pay for the GPU only while it runs.
-- After idle, the next visit reloads the models onto the GPU. Expect **1 to 2 minutes** before the page is ready. The UI shows waiting messages while it wakes.
-- The first multi-view run after a cold start is slower, because Zero123++ and Hunyuan3D load on first use.
-- The idle window is `scaledown_window` in `modal_app.py` (set to 20 minutes).
+- The GPU container **sleeps when idle**, so you pay only while it works.
+- The next visit reloads the models and takes **1 to 2 minutes**. The page shows waiting messages while it wakes.
+- The first multi-view run after waking is slower, because Zero123++ and Hunyuan3D load on first use.
+- The idle window is `scaledown_window` in `modal_app.py` (20 minutes).
 
 ---
 
-<h1 align="center">⚙️ Configuration</h1>
+<h1 align="center">⚙️ Settings</h1>
 
-Set in the image `.env` in `modal_app.py` (or as environment variables locally):
+Set in the image `.env` of `modal_app.py`, or as environment variables locally.
 
-| Variable | Default (Modal) | What it does |
+| Variable | Default | What it does |
 |---|---|---|
-| `D3_SD` | `xl` | `xl` = SDXL, `15` = SD 1.5 |
-| `D3_MV` / `D3_MV_DEFAULT` | `1` / `1` | Enable multi-view / make it the default |
-| `D3_MV_TRIES` | `3` | Max multi-view versions to build and compare |
-| `D3_MV_GOOD` | `0.80` | Stop early if a try scores at least this |
-| `D3_IOU_RETRY` | `0.60` | Below this sketch-match, retry with the next candidate |
-| `D3_HYMV_RES` | `448` | Hunyuan3D mesh resolution |
+| `D3_SD` | `xl` | `xl` for SDXL, `15` for SD 1.5 |
+| `D3_MV` / `D3_MV_DEFAULT` | `1` / `1` | Turn multi-view on / make it the default |
+| `D3_MV_TRIES` | `3` | Most multi-view versions to build and compare |
+| `D3_MV_GOOD` | `0.80` | Stop early when a try scores this well |
+| `D3_IOU_RETRY` | `0.60` | Retry with the next candidate below this sketch match |
+| `D3_HYMV_RES` | `448` | Hunyuan3D mesh detail |
 | `D3_HYMV_STEPS` | `60` | Hunyuan3D diffusion steps |
-| `D3_FACES` | `400000` | Triangle budget after decimation |
+| `D3_FACES` | `400000` | Triangle budget after simplifying |
 | `D3_SMOOTH` | `3` | Smoothing passes |
-| `D3_TRELLIS` | `1` | Enable the TRELLIS.2 option |
+| `D3_TRELLIS` | `1` | Turn the TRELLIS.2 option on |
 | `D3_REMBG` | `isnet-general-use` | Background-removal model |
 
 ---
 
-<h1 align="center">⚠️ Honest limitations</h1>
+<h1 align="center">⚠️ Honest limits</h1>
 
 > [!WARNING]
-> We'd rather say it than have you find it.
+> We would rather tell you than have you find out.
 
-- **Single-image 3D is hard.** The back and sides are inferred. The loop and multi-view voting make this better, not solved.
-- **Hands, thin legs and see-through objects** are hard cases. Try them, but don't expect perfect meshes.
-- **Pale objects on a white backdrop** (white walls, white mugs) can be partly removed by the background remover. We restore the missing parts from your sketch outline when we detect it, and we tell you when we did.
-- **Shape overlap is a rough self-check**, not ground truth. A loose or stylised sketch scores lower even when the model looks right. Judge by the model.
-- **Cold starts are real** on a scale-to-zero GPU.
+- **One picture is not enough to know the back.** The loop and multi-view voting make it better, not solved.
+- **Hands, thin legs and see-through objects** are hard. Try them, but do not expect perfect meshes.
+- **Pale objects on white** (white walls, white mugs) can be partly erased by the background remover. When we notice, we restore the missing part from your outline and tell you.
+- **The sketch match is a rough self-check, not the truth.** A loose or stylised sketch scores lower even when the model looks right. Judge by the model.
+- **Cold starts are real** on a GPU that sleeps.
 - **TRELLIS.2 is heavy.** It runs in its own container on a large GPU and is the slowest option.
 
 ---
 
-<h1 align="center">📁 Project layout</h1>
+<h1 align="center">📁 What is in the repo</h1>
 
 ```
 .
-├── dribble3d.py   # the whole app: pipeline, API (FastAPI) and the web UI
+├── dribble3d.py   # the whole app: pipeline, API and web page
 ├── modal_app.py   # Modal deployment (main app + separate TRELLIS.2 container)
-├── assets/        # banner, diagrams, screenshots, GIFs and videos for this README
+├── assets/        # banner, diagrams, screenshots, GIFs and videos
 └── README.md
 ```
 
@@ -331,13 +325,9 @@ Set in the image `.env` in `modal_app.py` (or as environment variables locally):
 <h3 align="center">🙏 Credits</h3>
 
 <p align="center">
-Built on TripoSR · Hunyuan3D-2 · TRELLIS.2 · Zero123++ · Stable Diffusion XL · ControlNet and the xinsir scribble-SDXL model · Qwen2.5-VL · CLIP · rembg · trimesh · pymeshlab.<br>
-Please check each model's licence before using outputs commercially.
+Built on TripoSR · Hunyuan3D-2 · TRELLIS.2 · Zero123++ · Stable Diffusion XL · ControlNet and xinsir scribble-SDXL · Qwen2.5-VL · CLIP · rembg · trimesh · pymeshlab.<br>
+Check each model's licence before using the results commercially.
 </p>
 
 <h3 align="center">📄 License</h3>
 <p align="center">Add your licence here.</p>
-
-
-
-[Dribble3d.docx](https://github.com/user-attachments/files/34232283/Sketch2Shape_Project_Report.1.docx)
